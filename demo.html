@@ -1,0 +1,33 @@
+<html>
+<head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js" type="text/javascript"></script>
+<script src="jquery.metadata.js" type="text/javascript"></script>
+<script src="jquery.jsonf.js" type="text/javascript"></script>
+</head>
+<body>
+
+<div id="myform">
+	<p>Name: <input name="name" value="Joe">
+	<p>Age: <input name="age" value="35">
+	<fieldset class="jsonf {name:'bio'}">
+		<legend>Bio</legend>
+		<p class="jsonf-array {name:'hobbies'}">Hobbies: <input value="coloring"><input value="music"><input value="meditation">
+		<fieldset class="jsonf {name:'education'}">
+			<legend>Degrees</legend>
+			<div class="jsonf-array {name:'degrees'}">
+			<p class="jsonf">Degree: <input name="type" value="BS"><input name="concentration" value="Sociology">
+			<p class="jsonf">Degree: <input name="type" value="MS"><input name="concentration" value="Computer Science">
+			<p class="jsonf">Degree: <input name="type" value="PhD"><input name="concentration" value="Philosophy">
+			</div>
+		</fieldset>
+	</fieldset>
+</div>
+
+<script>
+  $(document).ready(function(){
+	console.log($('#myform').jsonf());
+  });
+</script>
+
+</body>
+</html>
