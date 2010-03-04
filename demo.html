@@ -1,22 +1,35 @@
 <html>
 <head>
+
+<!-- dependencies -->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js" type="text/javascript"></script>
 <script src="dependencies/jquery.metadata.js" type="text/javascript"></script>
+
+<!-- jsonf plugin -->
 <script src="jquery.jsonf.js" type="text/javascript"></script>
 
 <!-- optional pretty printing -->
 <script src="dependencies/bodurov.com/json.formatter.js" type="text/javascript"></script>
 <link href="dependencies/bodurov.com/json.formatter.css" type="text/css" rel="stylesheet" />
+<style>
+.fifty {
+	float: left;
+	margin-right: 1em;
+}
+</style>
 
 </head>
 <body>
 
 <h4>JSONForms Live Demo</h4>
-<p>Modify any field and the JSON will update automatically. Then view the source code to get an idea how to use it.
+<p>Modify any field and when you move out of the field ("change" event), the JSON will update automatically.
+After playing around a bit, view the source code to get an idea how to use it.
 The one-liner that does all the work is: <span style="font-family: monospace">var json = $('#myform').jsonf()</span>.
 (<a href="http://code.google.com/p/jsonf/">Return to JSONForms</a>).</p>
 
-<div id="myform">
+<div class="fifty">
+
+  <div id="myform">
 	<p>Name: <input name="name" value="Joe">
 	<p>Age: <input name="age" value="35">
 	<div class="jsonf {name:'bio'}">
@@ -32,9 +45,13 @@ The one-liner that does all the work is: <span style="font-family: monospace">va
 		</fieldset>
 	</div>
 	<p><button id="submit">Submit</button>
+  </div>
+
 </div>
 
-<pre id="output"></pre>
+<div class="fifty">
+  <pre id="output"></pre>
+</div>
 
 <script>
   $(document).ready(function(){
