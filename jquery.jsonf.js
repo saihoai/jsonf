@@ -5,7 +5,12 @@
 			fields: ':input:enabled',	//':input[name]:enabled',
 			marker: 'jsonf',
 			json: null,
-			getname: function(){ return $(this).metadata().name; }
+			getname: function(){
+				var $e = $(this);
+				if($e.is('[name]')) return $e.attr('name');
+				if($e.metadata) return $e.metadata().name;
+				return undefined;
+			}
 		};
 		opts = $.extend(defaults, opts);
 		
@@ -29,9 +34,14 @@
 			
 			var $hits = $formroot.find(opts.fields).add(formobjects).add(formarrays);
 			$hits.each(function(){
+				var $parent = $hit.parentsUntil($formroot).filter(opts.sel_object_or_array).eq(0);
+				if(!$parent.length) $parent = $formroot;
+				var parentobj = $parent.data(opts.marker);
+				var parentIsArray = $.isArray(parentobj);
+			
 				var $hit = $(this), name, val;
 				if( $hit.is(opts.sel_object_or_array) ) {
-					name = opts.getname.apply(this);
+					if(!parentIsArray) name = opts.getname.apply(this);
 					val = $hit.data(opts.marker);
 				} else {
 					name = $hit.is('[name]') && $hit.attr('name') || undefined;
@@ -39,10 +49,7 @@
 					if(val===undefined) return; //abstain (e.g. unselected radio button)
 				}
 				
-				var $parent = $hit.parentsUntil($formroot).filter(opts.sel_object_or_array).eq(0);
-				if(!$parent.length) $parent = $formroot;
-				var parentobj = $parent.data(opts.marker);
-				if($.isArray(parentobj)) {
+				if(parentIsArray) {
 					parentobj.push(val);
 				} else if(name) {
 					parentobj[name] = val;
