@@ -34,12 +34,13 @@
 			
 			var $hits = $formroot.find(opts.fields).add(formobjects).add(formarrays);
 			$hits.each(function(){
+				var $hit = $(this), name, val;
+			
 				var $parent = $hit.parentsUntil($formroot).filter(opts.sel_object_or_array).eq(0);
 				if(!$parent.length) $parent = $formroot;
 				var parentobj = $parent.data(opts.marker);
 				var parentIsArray = $.isArray(parentobj);
 			
-				var $hit = $(this), name, val;
 				if( $hit.is(opts.sel_object_or_array) ) {
 					if(!parentIsArray) name = opts.getname.apply(this);
 					val = $hit.data(opts.marker);
