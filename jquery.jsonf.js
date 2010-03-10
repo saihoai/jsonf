@@ -1,4 +1,13 @@
 (function($){ 
+	
+	var parseBoolean = function(string) {
+		if(!string) return null;
+        switch(string.toLowerCase()){
+                case "true": case "yes": case "1": return true;
+                case "false": case "no": case "0": return false;
+                default: return null;
+        }
+	}
 
 	$.fn.jsonf = function(opts) {
 		var defaults = {
@@ -17,13 +26,17 @@
 		if(!opts.sel_object) opts.sel_object = '.' + opts.marker;
 		if(!opts.sel_array) opts.sel_array = '.' + opts.marker + '-array';
 		opts.sel_object_or_array = opts.sel_object + ',' + opts.sel_array;
-		
+
 		var fieldval = function($field) {
 			var type = $field.attr('type'); 
-			if(type=='checkbox') return $field.is(':checked');
+			if(type=='checkbox' && !$field.is(':checked')) return undefined;
 			if(type=='radio' && !$field.is(':checked')) return undefined;
+			var val = $field.val();
+			if($field.is('.' + opts.marker + '-number')) try { return parseFloat(val); } catch(ex){}
+			if($field.is('.' + opts.marker + '-integer')) try { return parseInt(val); } catch(ex){}
+			if($field.is('.' + opts.marker + '-boolean')) try { return parseBoolean(val); } catch(ex){}
 			//if(type=='radio') return $field.attr('checked'); 
-			return $field.val();
+			return val;
 		}
 		
 		var serialize = function() {
