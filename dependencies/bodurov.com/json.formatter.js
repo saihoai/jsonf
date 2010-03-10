@@ -13,9 +13,12 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 // we need tabs as spaces and not CSS magin-left 
 // in order to ratain format when coping and pasing the code
 window.SINGLE_TAB = "  ";
-window.ImgCollapsed = "images/Collapsed.gif";
-window.ImgExpanded = "images/Expanded.gif";
+window.ImgCollapsed = "dependencies/bodurov.com/images/Collapsed.gif";
+window.ImgExpanded = "dependencies/bodurov.com/images/Expanded.gif";
 window.QuoteKeys = true;
+window.IsCollapsible = true;
+window.TAB = window.SINGLE_TAB;
+
 function $id(id){ return document.getElementById(id); }
 function IsArray(obj) {
   return obj && 
@@ -25,7 +28,6 @@ function IsArray(obj) {
 }
 function Process(){
   SetTab();
-  window.IsCollapsible = $id("CollapsibleView").checked;
   var json = $id("RawJson").value;
   var html = "";
   try{
@@ -39,7 +41,7 @@ function Process(){
   }
 }
 function ProcessObject(obj, indent, addComma, isArray, isPropertyContent){
-  if(!window.TAB) window.TAB = '  ';  //added by Jeoff Wilks 2010-02-18
+  if(!window.TAB) window.TAB = '    ';  //added by Jeoff Wilks 2010-02-18
   var html = "";
   var comma = (addComma) ? "<span class='Comma'>,</span> " : ""; 
   var type = typeof obj;
