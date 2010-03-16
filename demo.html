@@ -2,7 +2,7 @@
 <head>
 
 <!-- dependencies -->
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.1/jquery.js" type="text/javascript"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.js" type="text/javascript"></script>
 
 <!-- jsonf plugin -->
 <script src="jquery.jsonf.js" type="text/javascript"></script>
@@ -12,6 +12,7 @@
 <link href="dependencies/bodurov.com/json.formatter.css" type="text/css" rel="stylesheet" />
 <style>
 .fifty {
+	width: 48%;
 	float: left;
 	margin-right: 1em;
 }
@@ -53,15 +54,14 @@ specified entirely using the DOM parent structure. The one-liner that does all t
 
 </div>
 
-<div class="fifty">
-  <pre id="output"></pre>
+<div id="output" class="fifty"></div>
 </div>
 
 <script>
   $(document).ready(function(){
 	function printform() {
 		var json = $('#myform').jsonf();
-		$('#output').addClass('CodeContainer').html(ProcessObject(json,0));
+		$('#output').prettyjson(json);
 	};
 	$('#myform').change(printform);
 	$('#submit').click(printform);
