@@ -9,43 +9,65 @@
         }
 	}
 
-	$.fn.jsonf = function(opts) {
-		var defaults = {
-			fields: ':input:enabled',	//':input[name]:enabled',
-			marker: 'jsonf',
-			json: null,
-			getname: function(){
-				var $e = $(this);
-				if($e.is('[name]')) return $e.attr('name');
-				if($e.metadata) return $e.metadata().name;
-				return undefined;
-			}
-		};
+	var defaults = {
+		fields: 'input,select,textarea,button',	//':input[name]:enabled',
+		marker: 'jsonf',
+		json: null,
+		valueFilters: {},
+		getname: function(){
+			var $e = $(this);
+			if($e.is('[name]')) return $e.attr('name');
+			if($e.metadata) return $e.metadata().name;
+			return undefined;
+		}
+	};
+
+	$.fn.jsonf = function(method, opts) {
+		if(typeof method !== "string") {
+			method = 'save';
+			opts = method;
+		}
+		
 		opts = $.extend(defaults, opts);
 		
 		if(!opts.sel_object) opts.sel_object = '.' + opts.marker;
 		if(!opts.sel_array) opts.sel_array = '.' + opts.marker + '-array';
+		if(!opts.class_template) opts.class_template = opts.marker + '-template';
+		if(!opts.sel_template) opts.sel_template = '.' + opts.class_template;
 		opts.sel_object_or_array = opts.sel_object + ',' + opts.sel_array;
+		
+		opts.valueFilters['input[type=radio]:not(:checked),input[type=checkbox]:not(:checked)'] = undefined;
+		opts.valueFilters['.' + opts.marker + '-number'] = parseFloat;
+		opts.valueFilters['.' + opts.marker + '-integer'] = parseInt;
+		opts.valueFilters['.' + opts.marker + '-boolean'] = parseBoolean;
 
+		//templates! hide and save them
+		$(opts.sel_template).each(function(){
+			var $tpl = $(this);
+			var $parent = $tpl.parents(opts.sel_object_or_array).first();
+			$tpl.remove(); //remove only after calculating parent
+			$tpl.removeClass(opts.class_template)
+			$parent.data(opts.sel_template, $tpl);
+		});
+		
 		var fieldval = function($field) {
-			var type = $field.attr('type'); 
-			if(type=='checkbox' && !$field.is(':checked')) return undefined;
-			if(type=='radio' && !$field.is(':checked')) return undefined;
 			var val = $field.val();
-			if($field.is('.' + opts.marker + '-number')) try { return parseFloat(val); } catch(ex){}
-			if($field.is('.' + opts.marker + '-integer')) try { return parseInt(val); } catch(ex){}
-			if($field.is('.' + opts.marker + '-boolean')) try { return parseBoolean(val); } catch(ex){}
-			//if(type=='radio') return $field.attr('checked'); 
+			for(key in opts.valueFilters) {
+				if($field.is(key)) try {
+					var filter = opts.valueFilters[key];
+					return (typeof filter === "function") ? filter(val) : filter;
+				} catch(ex){}
+			}
 			return val;
 		}
 		
-		var serialize = function() {
+		function save() {
 			var $formroot = $(this);
 			$formroot.data(opts.marker, $formroot.is(opts.sel_array) ? [] : {});
 			var formobjects = $formroot.find(opts.sel_object).each(function(){ $(this).data(opts.marker,{}) });
 			var formarrays = $formroot.find(opts.sel_array).each(function(){ $(this).data(opts.marker,[]) });
 			
-			var $hits = $formroot.find(opts.fields).add(formobjects).add(formarrays);
+			var $hits = $formroot.find(opts.fields).filter(':not(:disabled)').add(formobjects).add(formarrays);
 			$hits.each(function(){
 				var $hit = $(this), name, val;
 			
@@ -72,14 +94,24 @@
 			return $formroot.data(opts.marker);
 		};
 		
-		var load = function(formroot) {
+		function load(formroot) {
 			//TODO implement loading from JSON into form elements
 			return this;
 		};
-	
+		
+		function add() {
+			//TODO add an array element from template
+			var $tpl = $(this).data(opts.sel_template);
+			$tpl.clone().appendTo(this);
+			return $tpl;
+		};
+		
 		if(opts.json) return this.map(load);
 		
-		var ret = this.map(serialize);
+		var methods = { save: save, load: load, add: add };
+		
+		var ret = this.map(methods[method]);
+		
 		return (ret && ret.length < 2) ? ret.get(0) : ret;
 	};
 })(jQuery);
