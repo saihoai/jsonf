@@ -27,7 +27,10 @@
 		
 		if(!opts.sel_object) opts.sel_object = '.' + opts.marker;
 		if(!opts.sel_array) opts.sel_array = '.' + opts.marker + '-array';
+		if(!opts.sel_add) opts.sel_add = '.' + opts.marker + '-add';
+		if(!opts.sel_delete) opts.sel_delete = '.' + opts.marker + '-delete';
 		if(!opts.class_template) opts.class_template = opts.marker + '-template';
+		if(!opts.data_template_target) opts.data_template_target = opts.marker + '-template-target';
 		if(!opts.data_children) opts.data_children = opts.marker + '-children';
 		if(!opts.sel_template) opts.sel_template = '.' + opts.class_template;
 		opts.sel_object_or_array = opts.sel_object + ',' + opts.sel_array;
@@ -141,7 +144,8 @@
 		};
 
 		function add() {
-			var $item = $(this).data(opts.sel_template).clone().appendTo(this);
+			var $target = $(this).data(opts.data_template_target) || this;
+			var $item = $(this).data(opts.sel_template).clone().appendTo($target);
 			if($item.is(opts.sel_object)) initjsonf.apply($item);
 			if($item.is(opts.sel_array)) initjsonfarray.apply($item);
 			init_hits.apply($item);
@@ -182,9 +186,18 @@
 		$(opts.sel_template).each(function(){
 			var $tpl = $(this);
 			var $parent = $tpl.parents(opts.sel_object_or_array).first();
+			$parent.data(opts.data_template_target, $tpl.parent());
 			$tpl.remove(); //remove only after calculating parent
 			$tpl.removeClass(opts.class_template)
 			$parent.data(opts.sel_template, $tpl);
+		});
+		
+		//use jsonf-add buttons/links to add an item to a jsonf-array from its jsonf-template
+		$(opts.sel_add).die('click').live('click', function(){
+			$(this).parents(opts.sel_array).first().jsonf('add');
+		});
+		$(opts.sel_delete).die('click').live('click', function(){
+			$(this).parents(opts.sel_object).first().remove();
 		});
 
 		if(method == 'add') {
