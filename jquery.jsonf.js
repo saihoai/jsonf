@@ -30,6 +30,8 @@
 		if(!opts.sel_add) opts.sel_add = '.' + opts.marker + '-add';
 		if(!opts.sel_delete) opts.sel_delete = '.' + opts.marker + '-delete';
 		if(!opts.class_template) opts.class_template = opts.marker + '-template';
+		if(!opts.class_template_instance) opts.class_template_instance = opts.class_template + '-instance';
+		if(!opts.sel_template_instance) opts.sel_template_instance = '.' + opts.class_template_instance;
 		if(!opts.data_template_target) opts.data_template_target = opts.marker + '-template-target';
 		if(!opts.data_children) opts.data_children = opts.marker + '-children';
 		if(!opts.sel_template) opts.sel_template = '.' + opts.class_template;
@@ -145,7 +147,8 @@
 
 		function add() {
 			var $target = $(this).data(opts.data_template_target) || this;
-			var $item = $(this).data(opts.sel_template).clone().appendTo($target);
+			var $item = $(this).data(opts.sel_template).clone()
+				.addClass(opts.class_template_instance).appendTo($target);
 			if($item.is(opts.sel_object)) initjsonf.apply($item);
 			if($item.is(opts.sel_array)) initjsonfarray.apply($item);
 			init_hits.apply($item);
@@ -197,7 +200,7 @@
 			$(this).parents(opts.sel_array).first().jsonf('add');
 		});
 		$(opts.sel_delete).die('click').live('click', function(){
-			$(this).parents(opts.sel_object).first().remove();
+			$(this).parents(opts.sel_template_instance).first().remove();
 		});
 
 		if(method == 'add') {
