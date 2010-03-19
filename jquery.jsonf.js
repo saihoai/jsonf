@@ -37,6 +37,13 @@
 		opts.valueFilters['.' + opts.marker + '-number'] = {get: parseFloat, set: String };
 		opts.valueFilters['.' + opts.marker + '-integer'] = {get: parseInt, set: String };
 		opts.valueFilters['.' + opts.marker + '-boolean'] = {get: parseBoolean, set: String };
+		opts.valueFilters['.' + opts.marker + '-date'] = {get: function(val){
+				var ms = Date.parse(val); if(!ms || isNaN(ms)) return null; return new Date(ms);
+			}, set: function(val){
+				try {
+					return (val.getMonth()+1) + '/' + val.getDate() + '/' + val.getFullYear();
+				} catch(ex) { return ''; }
+			}};
 		opts.valueFilters['input[type=radio],input[type=checkbox]'] = {get: function(val){
 				return this.is(':checked') ? val : undefined;
 			}, set: function(val) {

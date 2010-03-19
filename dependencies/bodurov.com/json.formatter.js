@@ -46,7 +46,22 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 	  }
 	  func(element, depth);
 	}
-
+	function pad(width,num) {
+		var str = '' + num;
+		while(str.length < width) {
+			str = '0' + str;
+		}
+		return str;
+	}
+	function toISOString(d) {
+       return d.getUTCFullYear() + '-' +  pad(2,d.getUTCMonth() + 1) + '-' + pad(2,d.getUTCDate())
+		+ 'T' + pad(2,d.getUTCHours()) + ':' +  pad(2,d.getUTCMinutes()) + ':' + pad(2,d.getUTCSeconds())
+		+ '.' + pad(3,d.getUTCMilliseconds()) + 'Z';
+	}
+	//add Date.toISOString() to IE 6/7
+	if(!Date.prototype.toISOString)
+		Date.prototype.toISOString = function() { return toISOString(this); };
+		
 	
 $.fn.prettyjson = function(json, opts){
 	// we need tabs as spaces and not CSS magin-left 
@@ -67,7 +82,9 @@ $.fn.prettyjson = function(json, opts){
 	  var comma = (addComma) ? "<span class='Comma'>,</span> " : ""; 
 	  var type = typeof obj;
 	  var clpsHtml ="";
-	  if(IsArray(obj)){
+	  if(obj instanceof Date || obj.getMonth) {
+		return FormatLiteral(obj.toISOString(), "\"", comma, indent, isArray, "Date");
+	  }else if(IsArray(obj)){
 		if(obj.length == 0){
 		  html += GetRow(indent, "<span class='ArrayBrace'>[ ]</span>"+comma, isPropertyContent);
 		}else{

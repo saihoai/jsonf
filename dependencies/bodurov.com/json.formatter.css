@@ -18,6 +18,7 @@ PRE.code img{
 .ArrayBrace { color:#0033FF; font-weight:bold; }
 .PropertyName { color:#CC0000; font-weight:bold; }
 .String { color:#007777; }
+.Date { color:#000077; }
 .Number { color:#AA00AA; }
 .Boolean { color:#0000FF; }
 .Function { color:#AA6633; text-decoration:italic; }
