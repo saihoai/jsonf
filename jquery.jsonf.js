@@ -102,7 +102,6 @@
 			}
 			if(newval && newval !== retval) {
 				if($field.is(opts.sel_output)) {
-					debugger;
 					$field.html(newval);
 					retval = $field.html();
 				} else {
