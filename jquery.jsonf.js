@@ -25,17 +25,22 @@
 		
 		opts = $.extend(defaults, opts);
 		
-		if(!opts.sel_object) opts.sel_object = '.' + opts.marker;
-		if(!opts.sel_array) opts.sel_array = '.' + opts.marker + '-array';
-		if(!opts.sel_add) opts.sel_add = '.' + opts.marker + '-add';
-		if(!opts.sel_delete) opts.sel_delete = '.' + opts.marker + '-delete';
-		if(!opts.class_template) opts.class_template = opts.marker + '-template';
-		if(!opts.class_template_instance) opts.class_template_instance = opts.class_template + '-instance';
-		if(!opts.sel_template_instance) opts.sel_template_instance = '.' + opts.class_template_instance;
-		if(!opts.data_template_target) opts.data_template_target = opts.marker + '-template-target';
-		if(!opts.data_children) opts.data_children = opts.marker + '-children';
-		if(!opts.sel_template) opts.sel_template = '.' + opts.class_template;
-		opts.sel_object_or_array = opts.sel_object + ',' + opts.sel_array;
+		function setdefault(obj,prop,def) {
+			if(!obj[prop]) obj[prop] = def;
+		}
+		
+		setdefault(opts, 'sel_object',					'.' + opts.marker);
+		setdefault(opts, 'sel_array',					'.' + opts.marker + '-array');
+		setdefault(opts, 'sel_add',						'.' + opts.marker + '-add');
+		setdefault(opts, 'sel_delete',					'.' + opts.marker + '-delete');
+		setdefault(opts, 'sel_output',					'.' + opts.marker + '-output');
+		setdefault(opts, 'class_template',				opts.marker + '-template');
+		setdefault(opts, 'class_template_instance',		opts.class_template + '-instance');
+		setdefault(opts, 'sel_template',				'.' + opts.class_template);
+		setdefault(opts, 'sel_template_instance',		'.' + opts.class_template_instance);
+		setdefault(opts, 'data_template_target',		opts.marker + '-template-target');
+		setdefault(opts, 'data_children',				opts.marker + '-children');
+		setdefault(opts, 'sel_object_or_array',			opts.sel_object + ',' + opts.sel_array);
 		
 		//valueFilters act like $().val() but with special handling
 		//build the map using bracket notation because the string concats cause parse errors in {key:value} notation
@@ -84,7 +89,7 @@
 				return $field.data(opts.marker);
 			}
 
-			var retval = $field.val();
+			var retval = $field.is(opts.sel_output) ? $field.html() : $field.val();
 			for(key in opts.valueFilters) {
 				if($field.is(key)) try {
 					var filter = opts.valueFilters[key];
@@ -96,8 +101,14 @@
 				} catch(ex){}
 			}
 			if(newval && newval !== retval) {
-				$field.val(newval);
-				retval = $field.val();
+				if($field.is(opts.sel_output)) {
+					debugger;
+					$field.html(newval);
+					retval = $field.html();
+				} else {
+					$field.val(newval);
+					retval = $field.val();
+				}
 			}
 
 			return retval;
@@ -116,9 +127,11 @@
 		var init_hits = function(){
 			var $root = $(this),
 				$objects = $root.find(opts.sel_object).each(initjsonf),
-				$arrays = $root.find(opts.sel_array).each(initjsonfarray);
+				$arrays = $root.find(opts.sel_array).each(initjsonfarray),
+				$outputs = $root.find(opts.sel_output),
+				$fields = $root.find(opts.fields).filter(':not(:disabled)');
 
-			var $hits = $root.find(opts.fields).filter(':not(:disabled)').add($objects).add($arrays);
+			var $hits = $fields.add($outputs).add($objects).add($arrays);
 			$hits.each(function(){
 				var $hit = $(this), name, val;
 				
@@ -173,12 +186,12 @@
 					var val = data[k], $child = add.apply($root);
 					load.apply($child, [val]);
 				}
-			} else if(!$root.is(opts.fields)) {
+			} else if($root.is(opts.fields) || $root.is(opts.sel_output)) {
+				fieldval.apply($root, [data])
+			} else { //random DOM elements; just skip them
 				$root.children().each(function(){
 					load.apply(this, [data]);
 				});
-			} else {
-				fieldval.apply($root, [data])
 			}
 			return $root;
 		};
