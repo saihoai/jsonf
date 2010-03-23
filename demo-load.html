@@ -22,6 +22,7 @@ var input = {
 	  "mood": "snappy", 
 	  "awesome": true,
 	  "race": "alien",
+	  "fun": false,
 	  "bio": {
 		"hobbies": [
 		  "singing", 
@@ -76,6 +77,8 @@ is specified entirely using the DOM parent structure. The one-liner that does al
 	   <label for="awesome">Awesome</label>
 	<p>Race: <input id="race1" name="race" type="radio" value="human"> <label for="race1">Human</label>
 	         <input id="race2" name="race" type="radio" value="alien"> <label for="race2">Alien</label>
+	<p>Fun: <input id="fun1" name="fun" type="radio" class="jsonf-boolean" value="true"> <label for="fun1">Yes</label>
+	         <input id="fun2" name="fun" type="radio" class="jsonf-boolean" value="false"> <label for="fun2">No</label>
 	<div class="jsonf" name="bio">
 		<h3>Bio</h3>
 		Hobbies: <a class="addhobby" href="#">(add)</a>

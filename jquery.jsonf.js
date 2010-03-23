@@ -93,14 +93,14 @@
 			for(key in opts.valueFilters) {
 				if($field.is(key)) try {
 					var filter = opts.valueFilters[key];
-					if(newval) { //set
+					if(newval !== undefined) { //set
 						newval = filter.set.apply($field,[newval]);
 					} else { //get
 						retval = filter.get.apply($field,[retval]);
 					}
 				} catch(ex){}
 			}
-			if(newval && newval !== retval) {
+			if(newval !== undefined && newval !== retval) {
 				if($field.is(opts.sel_output)) {
 					$field.html(newval);
 					retval = $field.html();
@@ -177,7 +177,7 @@
 			if($root.is(opts.sel_object)) {
 				$root.data(opts.data_children).each(function(){
 					var $child = $(this), name = opts.getname.apply($child), val = data[name];
-					if(!val) return;
+					if(val === undefined) return;
 					load.apply($child, [val]);
 				});
 			} else if($root.is(opts.sel_array)) {
